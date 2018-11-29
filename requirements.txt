@@ -1,0 +1,9 @@
+Click==7.0
+Flask==1.0.2
+Jinja2==2.10
+MarkupSafe==1.1.0
+Werkzeug==0.14.1
+argparse==1.2.1
+itsdangerous==1.1.0
+python-arptable==0.0.2
+wsgiref==0.1.2
