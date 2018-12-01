@@ -1,18 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<title>Home Page</title>
+	<!-- Compiled and minified CSS -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
 <body>
-	This is the login page. Login here.
 
-	<form action="/login" method="POST">
+	<div class="container">
+		<h3 class="center-align">Login to Ashoka WiFi</h3>
+		<div class="row">
 
-		Username: <input type="text" name="username"><br>
-		Password: <input type="password" name="password"><br>
+			<form action="/login" id="login-form" class="col s12">
 
-		<input type="submit" name="submit">
-		
-	</form>
+				<div class="row">
+					<div class="input-field col s6 offset-s3">
+					    <input id="username" type="text" class="validate" name="username">
+					    <label for="username">Username</label>
+					</div>
+				</div>
+
+			<div class="row">
+					<div class="input-field col s6 offset-s3">
+					    <input id="password" type="text" class="validate" name="password">
+					    <label for="password">Password</label>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col s6 offset-s3 center-align">
+						<button class="btn waves-effect waves-light" type="submit" name="submit">Submit</button>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col s6 offset-s3 center-align" id="login-message"></div>
+				</div>
+			</form>
+		</div>
+
+		<div class="row center-align" id="device-list">
+			
+		</div>
+	</div>
+
+	<script id="device-template" type="text/template">
+		{% raw %}
+			<button class="btn-large white teal-text" data-mac="{{mac}}">{{device}}</button>
+		{% endraw %}
+	</script>
+	{% include 'partials/jquery.html' %}
+	<script src="{{ url_for('static', filename='js/mustache.min.js') }}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>
