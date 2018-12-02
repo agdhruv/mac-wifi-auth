@@ -21,9 +21,6 @@ def login():
 	user_ip = request.remote_addr
 	user_platform = request.user_agent.platform
 
-	# ping IP to ensure it's presence in the ARP table
-	os.system('ping {0} -c 2'.format(user_ip))
-
 	data = request.get_json()
 
 	username = data['username']
@@ -43,9 +40,20 @@ def login():
 	session['logged_in'] = True
 	session['username'] = username
 
-	user_mac = get_mac(user_ip)
+	try:
+		user_mac = get_mac(user_ip)
+	except ValueError as e:
+		error = "IP not found. Contact IT Department."
+		return jsonify(error = error)
 
-	if len(db_user['devices']) < 2:
+	session['this_mac'] = user_mac
+
+	# check if mac alread registered
+	for device in db_user['devices']:
+		if device['mac'] == user_mac:
+			return jsonify(message = "This device is already registered. You now have internet access.")
+
+	if len(db_user['devices']) < DEVICE_LIMIT:
 		# basically, add this mac
 		db.users.find_one_and_update(
 			{"username": username},
@@ -62,7 +70,7 @@ def login():
 		return jsonify(message = "Device registered. You now have internet access on this device.")
 	else:
 		# get device list
-		return jsonify(message = "Maximum device limit reached.", devices = db_user['devices'])
+		return jsonify(message = "Maximum device limit reached.", devices = db_user['devices'], this_mac = user_mac)
 
 @app.route('/deleteDevice', methods = ['POST'])
 def deleteDevice():
@@ -73,10 +81,41 @@ def deleteDevice():
 	
 	username = session['username']
 	mac = data['mac']
+	user_platform = request.user_agent.platform
+	this_mac = session['this_mac']
 
-	# NOW DELETE THIS MAC YO
+	try:
+		# delete old MAC
+		db.users.find_one_and_update(
+			{"username": username},
+			{	
+				"$pull": {
+					"devices": {
+						"mac": mac
+					}
+				}
+			},
+			return_document = ReturnDocument.AFTER
+		)
 
-	return jsonify(hi="hi")
+		# add new mac
+		db.users.find_one_and_update(
+			{"username": username},
+			{	
+				"$push": {
+					"devices": {
+						"device": user_platform,
+						"mac": this_mac
+					}
+				}
+			},
+			return_document = ReturnDocument.AFTER
+		)
+	except Exception as e:
+		print e
+		return jsonify(error = "Error in updation. Contact IT.")
+
+	return jsonify(message = "Device registered. You now have internet access.")
 
 
 if __name__ == '__main__':

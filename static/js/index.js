@@ -58,7 +58,11 @@
 			url: '/deleteDevice',
 			data: data,
 			success: function (res) {
-				console.log(res);
+				if (res.error) {
+					$("#login-message").html(res.error);
+				} else {
+					$("#login-message").html(res.message);
+				}
 			},
 			dataType: 'json'
 		});
