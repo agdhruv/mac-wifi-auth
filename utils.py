@@ -27,10 +27,11 @@ def get_mac(ip):
 	# ping IP to ensure it's presence in the ARP table
 	# os.system('ping {0} -c 2'.format(ip))
 
-	pid = Popen(["arp", "-n", ip], stdout=PIPE)
-	s = pid.communicate()[0]
-	mac = re.search(r"(([a-f\d]{1,2}\:){5}[a-f\d]{1,2})", s).groups()[0]
+	try:
+		pid = Popen(["arp", "-n", ip], stdout=PIPE)
+		s = pid.communicate()[0]
+		mac = re.search(r"(([a-f\d]{1,2}\:){5}[a-f\d]{1,2})", s).groups()[0]
 
-	return mac
-
-	raise ValueError('IP not in ARP table')
+		return mac
+	except Exception as e:
+		raise ValueError('IP not in ARP table')

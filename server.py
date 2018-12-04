@@ -4,7 +4,6 @@ import os
 from pprint import pprint
 
 from utils import get_mac
-from config import DEVICE_LIMIT
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "omg such secret much wowowowowow"
@@ -53,7 +52,7 @@ def login():
 		if device['mac'] == user_mac:
 			return jsonify(message = "This device is already registered. You now have internet access.")
 
-	if len(db_user['devices']) < DEVICE_LIMIT:
+	if len(db_user['devices']) < db_user['device_limit']:
 		# basically, add this mac
 		db.users.find_one_and_update(
 			{"username": username},
