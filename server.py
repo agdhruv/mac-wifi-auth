@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, session, jsonify
 from pymongo import MongoClient, ReturnDocument
 import os
 from pprint import pprint
+import socket
 
 from utils import get_mac
 
@@ -118,4 +119,10 @@ def deleteDevice():
 
 
 if __name__ == '__main__':
+	print "##### Running on", socket.gethostbyname(socket.gethostname()), "#####"
 	app.run(debug = True, port = 8000, host = '0.0.0.0')
+
+
+
+
+
